@@ -37,10 +37,6 @@ volatile bool serial_buffering = false;
   bool bt_init_ran = false;
 #endif
 
-#if HAS_CONSOLE
-  #include "Console.h"
-#endif
-
 #if PLATFORM == PLATFORM_ESP32 || PLATFORM == PLATFORM_NRF52
   #define MODEM_QUEUE_SIZE 4
   typedef struct {
@@ -204,23 +200,9 @@ void setup() {
     // probe boot parameters.
     if (LoRa->preInit()) {
       modem_installed = true;
-      
-      #if HAS_INPUT
-        // Skip quick-reset console activation
-      #else
+
+      #if !HAS_INPUT
         uint32_t lfr = LoRa->getFrequency();
-        if (lfr == 0) {
-          // Normal boot
-        } else if (lfr == M_FRQ_R) {
-          // Quick reboot
-          #if HAS_CONSOLE
-            if (rtc_get_reset_reason(0) == POWERON_RESET) {
-              console_active = true;
-            }
-          #endif
-        } else {
-          // Unknown boot
-        }
         LoRa->setFrequency(M_FRQ_S);
       #endif
 
@@ -234,11 +216,7 @@ void setup() {
   #endif
 
   #if HAS_DISPLAY
-    #if HAS_EEPROM
-    if (EEPROM.read(eeprom_addr(ADDR_CONF_DSET)) != CONF_OK_BYTE) {
-    #elif MCU_VARIANT == MCU_NRF52
     if (eeprom_read(eeprom_addr(ADDR_CONF_DSET)) != CONF_OK_BYTE) {
-    #endif
       eeprom_update(eeprom_addr(ADDR_CONF_DSET), CONF_OK_BYTE);
       #if BOARD_MODEL == BOARD_TECHO
         eeprom_update(eeprom_addr(ADDR_CONF_DINT), 0x03);
@@ -264,31 +242,16 @@ void setup() {
       bt_init();
       bt_init_ran = true;
     #endif
-
-    if (console_active) {
-      #if HAS_CONSOLE
-        console_start();
-      #else
-        kiss_indicate_reset();
-      #endif
-    } else {
       kiss_indicate_reset();
-    }
   #endif
 
   #if MCU_VARIANT == MCU_ESP32 || MCU_VARIANT == MCU_NRF52
     #if MODEM == SX1280
       avoid_interference = false;
     #else
-      #if HAS_EEPROM
-        uint8_t ia_conf = EEPROM.read(eeprom_addr(ADDR_CONF_DIA));
-        if (ia_conf == 0x00) { avoid_interference = true; }
-        else                 { avoid_interference = false; }
-      #elif MCU_VARIANT == MCU_NRF52
         uint8_t ia_conf = eeprom_read(eeprom_addr(ADDR_CONF_DIA));
         if (ia_conf == 0x00) { avoid_interference = true; }
         else                 { avoid_interference = false; }
-      #endif
     #endif
   #endif
 
@@ -502,7 +465,7 @@ void ISR_VECT receive_callback(int packet_size) {
 
 bool startRadio() {
   update_radio_lock();
-  if (!radio_online && !console_active) {
+  if (!radio_online) {
     if (!radio_locked && hw_ready) {
       if (!LoRa->begin(lora_freq)) {
         // The radio could not be started.
@@ -1584,15 +1547,8 @@ void loop() {
   
   } else {
     if (hw_ready) {
-      if (console_active) {
-        #if HAS_CONSOLE
-          console_loop();
-        #endif
-      } else {
         led_indicate_standby();
-      }
     } else {
-
       led_indicate_not_ready();
       stopRadio();
     }
@@ -1614,7 +1570,7 @@ void loop() {
   #endif
 
   #if HAS_BLUETOOTH || HAS_BLE == true
-    if (!console_active && bt_ready) update_bt();
+    if (bt_ready) update_bt();
   #endif
 
   #if HAS_INPUT
@@ -1682,13 +1638,6 @@ void button_event(uint8_t event, unsigned long duration) {
       display_unblank();
     } else {
       if (duration > 10000) {
-        #if HAS_CONSOLE
-          #if HAS_BLUETOOTH || HAS_BLE
-            bt_stop();
-          #endif
-          console_active = true;
-          console_start();
-        #endif
       } else if (duration > 5000) {
         #if HAS_BLUETOOTH || HAS_BLE
           if (bt_state != BT_STATE_CONNECTED) { bt_enable_pairing(); }

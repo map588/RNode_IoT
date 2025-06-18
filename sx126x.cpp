@@ -8,7 +8,7 @@
 
 #if MCU_VARIANT == MCU_ESP32
   #if MCU_VARIANT == MCU_ESP32 and !defined(CONFIG_IDF_TARGET_ESP32S3)
-    #include "soc/rtc_wdt.h"
+    #include <soc/rtc_wdt.h>
   #endif
   #define ISR_VECT IRAM_ATTR
 #else
@@ -139,20 +139,19 @@ bool sx126x::preInit() {
   long start = millis();
   uint8_t syncmsb;
   uint8_t synclsb;
+  bool syncword_correct = false;
   while (((millis() - start) < 2000) && (millis() >= start)) {
       syncmsb = readRegister(REG_SYNC_WORD_MSB_6X);
       synclsb = readRegister(REG_SYNC_WORD_LSB_6X);
       if ( uint16_t(syncmsb << 8 | synclsb) == 0x1424 || uint16_t(syncmsb << 8 | synclsb) == 0x4434) {
+          syncword_correct = true;
           break;
       }
       delay(100);
   }
-  if ( uint16_t(syncmsb << 8 | synclsb) != 0x1424 && uint16_t(syncmsb << 8 | synclsb) != 0x4434) {
-      return false;
-  }
 
   _preinit_done = true;
-  return true;
+  return syncword_correct;
 }
 
 uint8_t ISR_VECT sx126x::readRegister(uint16_t address) {

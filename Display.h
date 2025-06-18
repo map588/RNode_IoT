@@ -288,17 +288,13 @@ bool display_init() {
       Wire.begin(SDA_OLED, SCL_OLED);
     #endif
 
-    #if HAS_EEPROM
-      uint8_t display_rotation = EEPROM.read(eeprom_addr(ADDR_CONF_DROT));
-    #elif MCU_VARIANT == MCU_NRF52
+    #if HAS_EEPROM || MCU_VARIANT == MCU_NRF52
       uint8_t display_rotation = eeprom_read(eeprom_addr(ADDR_CONF_DROT));
     #endif
     if (display_rotation < 0 or display_rotation > 3) display_rotation = 0xFF;
 
     #if DISP_CUSTOM_ADDR == true
-      #if HAS_EEPROM
-        uint8_t display_address = EEPROM.read(eeprom_addr(ADDR_CONF_DADR));
-      #elif MCU_VARIANT == MCU_NRF52
+      #if HAS_EEPROM || MCU_VARIANT == MCU_NRF52
         uint8_t display_address = eeprom_read(eeprom_addr(ADDR_CONF_DADR));
       #endif
       if (display_address == 0xFF) display_address = DISP_ADDR;
@@ -306,17 +302,7 @@ bool display_init() {
       uint8_t display_address = DISP_ADDR;
     #endif
 
-    #if HAS_EEPROM
-      if (EEPROM.read(eeprom_addr(ADDR_CONF_BSET)) == CONF_OK_BYTE) {
-        uint8_t db_timeout = EEPROM.read(eeprom_addr(ADDR_CONF_DBLK));
-        if (db_timeout == 0x00) {
-          display_blanking_enabled = false;
-        } else {
-          display_blanking_enabled = true;
-          display_blanking_timeout = db_timeout*1000;
-        }
-      }
-    #elif MCU_VARIANT == MCU_NRF52
+    #if HAS_EEPROM || MCU_VARIANT == MCU_NRF52
       if (eeprom_read(eeprom_addr(ADDR_CONF_BSET)) == CONF_OK_BYTE) {
         uint8_t db_timeout = eeprom_read(eeprom_addr(ADDR_CONF_DBLK));
         if (db_timeout == 0x00) {
@@ -413,9 +399,7 @@ bool display_init() {
       display.cp437(true);
       #endif
 
-      #if HAS_EEPROM
-        display_intensity = EEPROM.read(eeprom_addr(ADDR_CONF_DINT));
-      #elif MCU_VARIANT == MCU_NRF52
+      #if HAS_EEPROM || MCU_VARIANT == MCU_NRF52
         display_intensity = eeprom_read(eeprom_addr(ADDR_CONF_DINT));
       #endif
       display_unblank_intensity = display_intensity;
@@ -710,8 +694,7 @@ void draw_stat_area() {
 }
 
 void update_stat_area() {
-  if (eeprom_ok && !firmware_update_mode && !console_active) {
-
+  if (eeprom_ok && !firmware_update_mode) {
     draw_stat_area();
     if (disp_mode == DISP_MODE_PORTRAIT) {
       drawBitmap(p_as_x, p_as_y, stat_area.getBuffer(), stat_area.width(), stat_area.height(), SSD1306_WHITE, SSD1306_BLACK);
@@ -719,16 +702,10 @@ void update_stat_area() {
       drawBitmap(p_as_x+2, p_as_y, stat_area.getBuffer(), stat_area.width(), stat_area.height(), SSD1306_WHITE, SSD1306_BLACK);
       if (device_init_done && !disp_ext_fb) drawLine(p_as_x, 0, p_as_x, 64, SSD1306_WHITE);
     }
-
   } else {
     if (firmware_update_mode) {
       drawBitmap(p_as_x, p_as_y, bm_updating, stat_area.width(), stat_area.height(), SSD1306_BLACK, SSD1306_WHITE);
-    } else if (console_active && device_init_done) {
-      drawBitmap(p_as_x, p_as_y, bm_console, stat_area.width(), stat_area.height(), SSD1306_BLACK, SSD1306_WHITE);
-      if (disp_mode == DISP_MODE_LANDSCAPE) {
-        drawLine(p_as_x, 0, p_as_x, 64, SSD1306_WHITE);
-      }
-    }
+    } 
   }
 }
 
@@ -856,11 +833,7 @@ void draw_disp_area() {
               disp_area.drawBitmap(0, 37, bm_nfr, disp_area.width(), 27, SSD1306_WHITE, SSD1306_BLACK);
             }
           } else if (disp_page == 1) {
-            if (!console_active) {
               disp_area.drawBitmap(0, 37, bm_hwok, disp_area.width(), 27, SSD1306_WHITE, SSD1306_BLACK);
-            } else {
-              disp_area.drawBitmap(0, 37, bm_console_active, disp_area.width(), 27, SSD1306_WHITE, SSD1306_BLACK);
-            }
           } else if (disp_page == 2) {
             disp_area.drawBitmap(0, 37, bm_version, disp_area.width(), 27, SSD1306_WHITE, SSD1306_BLACK);
             char *v_str = (char*)malloc(3+1);

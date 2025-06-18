@@ -118,6 +118,9 @@
   #define MODEL_FE            0xFE // Homebrew board, max 17dBm output power
   #define MODEL_FF            0xFF // Homebrew board, max 14dBm output power
 
+  #define ESP32
+  #define BOARD_MODEL BOARD_HELTEC32_V3
+
   #if defined(__AVR_ATmega1284P__)
     #define PLATFORM PLATFORM_AVR
     #define MCU_VARIANT MCU_1284P
@@ -212,7 +215,6 @@
 
     #if BOARD_MODEL == BOARD_GENERIC_ESP32
       #define HAS_BLUETOOTH true
-      #define HAS_CONSOLE true
       #define HAS_EEPROM true
       const int pin_cs = 4;
       const int pin_reset = 36;
@@ -224,7 +226,7 @@
       #define HAS_DISPLAY true
       #define HAS_PMU true
       #define HAS_BLUETOOTH true
-      #define HAS_CONSOLE true
+      
       #define HAS_SD false
       #define HAS_EEPROM true
       #define I2C_SDA 21
@@ -253,7 +255,7 @@
 
     #elif BOARD_MODEL == BOARD_HUZZAH32
       #define HAS_BLUETOOTH true
-      #define HAS_CONSOLE true
+      
       #define HAS_EEPROM true
       const int pin_cs = 4;
       const int pin_reset = 36;
@@ -264,7 +266,7 @@
     #elif BOARD_MODEL == BOARD_LORA32_V1_0
       #define HAS_DISPLAY true
       #define HAS_BLUETOOTH true
-      #define HAS_CONSOLE true
+      
       #define HAS_EEPROM true
       const int pin_cs = 18;
       const int pin_reset = 14;
@@ -280,7 +282,7 @@
     #elif BOARD_MODEL == BOARD_LORA32_V2_0
       #define HAS_DISPLAY true
       #define HAS_BLUETOOTH true
-      #define HAS_CONSOLE true
+      
       #define HAS_EEPROM true
       const int pin_cs = 18;
       const int pin_reset = 12;
@@ -297,7 +299,7 @@
       #define HAS_DISPLAY true
       #define HAS_BLUETOOTH true
       #define HAS_PMU true
-      #define HAS_CONSOLE true
+      
       #define HAS_EEPROM true
       const int pin_cs = 18;
       const int pin_reset = 23;
@@ -316,7 +318,7 @@
     #elif BOARD_MODEL == BOARD_HELTEC32_V2
       #define HAS_DISPLAY true
       #define HAS_BLUETOOTH true
-      #define HAS_CONSOLE true
+      
       #define HAS_EEPROM true
       #define HAS_INPUT true
       #define HAS_SLEEP true
@@ -342,7 +344,7 @@
       #define HAS_BLUETOOTH false
       #define HAS_BLE true
       #define HAS_PMU true
-      #define HAS_CONSOLE true
+      
       #define HAS_EEPROM true
       #define HAS_INPUT true
       #define HAS_SLEEP true
@@ -379,7 +381,7 @@
       #define HAS_DISPLAY true
       #define HAS_BLUETOOTH true
       #define HAS_NP true
-      #define HAS_CONSOLE true
+      
       #define HAS_EEPROM true
       const int pin_cs = 18;
       const int pin_reset = 12;
@@ -398,7 +400,7 @@
     #elif BOARD_MODEL == BOARD_RNODE_NG_21
       #define HAS_DISPLAY true
       #define HAS_BLUETOOTH true
-      #define HAS_CONSOLE true
+      
       #define HAS_PMU true
       #define HAS_NP true
       #define HAS_SD false
@@ -426,7 +428,7 @@
     #elif BOARD_MODEL == BOARD_T3S3
       #define IS_ESP32S3 true
       #define HAS_DISPLAY true
-      #define HAS_CONSOLE true
+      
       #define HAS_BLUETOOTH false
       #define HAS_BLE true
       #define HAS_PMU true
@@ -499,7 +501,6 @@
       #define HAS_TCXO true
 
       #define HAS_DISPLAY false
-      #define HAS_CONSOLE false
       #define HAS_BLUETOOTH false
       #define HAS_BLE true
       #define HAS_PMU true
@@ -555,7 +556,7 @@
       #define OCP_TUNED 0x38
 
       #define HAS_DISPLAY true
-      #define HAS_CONSOLE true
+      
       #define HAS_BLUETOOTH false
       #define HAS_BLE true
       #define HAS_PMU true
@@ -606,7 +607,7 @@
       #define HAS_TCXO true
 
       #define HAS_DISPLAY false
-      #define HAS_CONSOLE true
+      
       #define HAS_BLUETOOTH false
       #define HAS_BLE true
       #define HAS_NP false
@@ -648,7 +649,6 @@
       #define HAS_DISPLAY true
       #define HAS_BLUETOOTH false
       #define HAS_BLE true
-      #define HAS_CONSOLE false
       #define HAS_PMU false
       #define HAS_NP false
       #define HAS_SD false
@@ -687,7 +687,6 @@
       #define HAS_EEPROM false
       #define HAS_BLUETOOTH false
       #define HAS_BLE true
-      #define HAS_CONSOLE false
       #define HAS_PMU true
       #define HAS_NP false
       #define HAS_SD false
@@ -747,7 +746,6 @@
       #define HAS_DISPLAY true
       #define HAS_BLUETOOTH false
       #define HAS_BLE true
-      #define HAS_CONSOLE false
       #define HAS_PMU true
       #define HAS_NP true
       #define HAS_SD false

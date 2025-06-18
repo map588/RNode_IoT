@@ -12,6 +12,8 @@
 
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#ifndef BLUETOOTH_H
+#define BLUETOOTH_H
 
 #if MCU_VARIANT == MCU_ESP32
 
@@ -120,11 +122,7 @@ char bt_devname[11];
 
     bool bt_setup_hw() {
       if (!bt_ready) {
-        if (EEPROM.read(eeprom_addr(ADDR_CONF_BT)) == BT_ENABLE_BYTE) {
-          bt_enabled = true;
-        } else {
-          bt_enabled = false;
-        }
+        bt_enabled = eeprom_read(eeprom_addr(ADDR_CONF_BT)) == BT_ENABLE_BYTE;
         if (btStart()) {
           if (esp_bluedroid_init() == ESP_OK) {
             if (esp_bluedroid_enable() == ESP_OK) {
@@ -133,7 +131,7 @@ char bt_devname[11];
               for (int i = 0; i < BT_DEV_ADDR_LEN; i++) {
                   data[i] = bda_ptr[i];
               }
-              data[BT_DEV_ADDR_LEN] = EEPROM.read(eeprom_addr(ADDR_SIGNATURE));
+              data[BT_DEV_ADDR_LEN] = eeprom_read(eeprom_addr(ADDR_SIGNATURE));
               unsigned char *hash = MD5::make_hash(data, BT_DEV_ADDR_LEN);
               memcpy(bt_dh, hash, BT_DEV_HASH_LEN);
               sprintf(bt_devname, "RNode %02X%02X", bt_dh[14], bt_dh[15]);
@@ -156,7 +154,7 @@ char bt_devname[11];
     bool bt_init() {
         bt_state = BT_STATE_OFF;
         if (bt_setup_hw()) {
-          if (bt_enabled && !console_active) bt_start();
+          if (bt_enabled) bt_start();
           return true;
         } else {
           return false;
@@ -201,7 +199,7 @@ char bt_devname[11];
       // Serial.println("BT init");
       bt_state = BT_STATE_OFF;
       if (bt_setup_hw()) {
-        if (bt_enabled && !console_active) bt_start();
+        if (bt_enabled) bt_start();
         return true;
       } else {
         return false;
@@ -320,11 +318,8 @@ char bt_devname[11];
     bool bt_setup_hw() {
       // Serial.println("BT setup hw");
       if (!bt_ready) {
-        if (EEPROM.read(eeprom_addr(ADDR_CONF_BT)) == BT_ENABLE_BYTE) {
-          bt_enabled = true;
-        } else {
-          bt_enabled = false;
-        }
+        bt_enabled = eeprom_read(eeprom_addr(ADDR_CONF_BT)) == BT_ENABLE_BYTE;
+
         if (btStart()) {
           if (esp_bluedroid_init() == ESP_OK) {
             if (esp_bluedroid_enable() == ESP_OK) {
@@ -333,7 +328,7 @@ char bt_devname[11];
               for (int i = 0; i < BT_DEV_ADDR_LEN; i++) {
                   data[i] = bda_ptr[i];
               }
-              data[BT_DEV_ADDR_LEN] = EEPROM.read(eeprom_addr(ADDR_SIGNATURE));
+              data[BT_DEV_ADDR_LEN] = eeprom_read(eeprom_addr(ADDR_SIGNATURE));
               unsigned char *hash = MD5::make_hash(data, BT_DEV_ADDR_LEN);
               memcpy(bt_dh, hash, BT_DEV_HASH_LEN);
               sprintf(bt_devname, "RNode %02X%02X", bt_dh[14], bt_dh[15]);
@@ -492,15 +487,8 @@ char bt_devname[11];
   bool bt_setup_hw() {
     // Serial.println("Setup HW");
     if (!bt_ready) {
-      #if HAS_EEPROM 
-          if (EEPROM.read(eeprom_addr(ADDR_CONF_BT)) == BT_ENABLE_BYTE) {
-      #else
-          if (eeprom_read(eeprom_addr(ADDR_CONF_BT)) == BT_ENABLE_BYTE) {
-      #endif
-        bt_enabled = true;
-      } else {
-        bt_enabled = false;
-      }
+      bt_enabled = eeprom_read(eeprom_addr(ADDR_CONF_BT)) == BT_ENABLE_BYTE;
+
       Bluefruit.configPrphBandwidth(BANDWIDTH_MAX);
       Bluefruit.autoConnLed(false);
       if (Bluefruit.begin()) {
@@ -527,11 +515,8 @@ char bt_devname[11];
         for (int i = 0; i < BT_DEV_ADDR_LEN; i++) {
             data[i] = gap_addr.addr[i];
         }
-        #if HAS_EEPROM 
-            data[BT_DEV_ADDR_LEN] = EEPROM.read(eeprom_addr(ADDR_SIGNATURE));
-        #else
-            data[BT_DEV_ADDR_LEN] = eeprom_read(eeprom_addr(ADDR_SIGNATURE));
-        #endif
+        data[BT_DEV_ADDR_LEN] = eeprom_read(eeprom_addr(ADDR_SIGNATURE));
+
         unsigned char *hash = MD5::make_hash(data, BT_DEV_ADDR_LEN);
         memcpy(bt_dh, hash, BT_DEV_HASH_LEN);
         sprintf(bt_devname, "RNode %02X%02X", bt_dh[14], bt_dh[15]);
@@ -583,7 +568,7 @@ char bt_devname[11];
     // Serial.println("BT init");
     bt_state = BT_STATE_OFF;
     if (bt_setup_hw()) {
-      if (bt_enabled && !console_active) bt_start();
+      if (bt_enabled) bt_start();
       return true;
     } else {
       return false;
@@ -613,3 +598,4 @@ char bt_devname[11];
     }
   }
 #endif
+#endif /*BLUETOOTH_H*/

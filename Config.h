@@ -42,7 +42,6 @@
 
 	#define M_FRQ_S 27388122
 	#define M_FRQ_R 27388061
-	bool console_active = false;
 	bool modem_installed = false;
 
 	#define MTU   	   508
@@ -51,9 +50,8 @@
 	#define MIN_L	   1
 	#define CMD_L      64
 
-    bool mw_radio_online = false;
-
-	#define eeprom_addr(a) (a+EEPROM_OFFSET)
+  bool mw_radio_online = false;
+	
 
     #if (MODEM == SX1262 || MODEM == SX1280) && defined(NRF52840_XXAA)
         SPIClass spiModem(NRF_SPIM2, pin_miso, pin_sclk, pin_mosi);
