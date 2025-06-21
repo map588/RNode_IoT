@@ -16,11 +16,6 @@
 #define BLUETOOTH_H
 
 #if MCU_VARIANT == MCU_ESP32
-
-#elif MCU_VARIANT == MCU_NRF52
-#endif
-
-#if MCU_VARIANT == MCU_ESP32
   #if HAS_BLUETOOTH == true
     #include "BluetoothSerial.h"
     #include "esp_bt_main.h"
