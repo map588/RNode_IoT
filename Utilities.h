@@ -30,13 +30,13 @@
 #include <stddef.h>
 
 #if MODEM == SX1262
-#include "sx126x.h"
+#include "Lora_Modules/sx126x.h"
 sx126x *LoRa = &sx126x_modem;
 #elif MODEM == SX1276 || MODEM == SX1278
-#include "sx127x.h"
+#include "Lora_Modules/sx127x.h"
 sx127x *LoRa = &sx127x_modem;
 #elif MODEM == SX1280
-#include "sx128x.h"
+#include "Lora_Modules/sx128x.h"
 sx128x *LoRa = &sx128x_modem;
 #endif
 
@@ -130,10 +130,10 @@ unsigned long get_rng_seed() {
 #endif
 
 
-#include "Led.h"
-#include "Serial_Comm.h"
-#include "Kiss.h"
-#include "rnode_eeprom.h"
+#include "Utilities/Led.h"
+#include "Utilities/Serial_Comm.h"
+#include "Utilities/Kiss.h"
+#include "Utilities/rnode_eeprom.h"
 
 
 typedef struct FIFOBuffer {
