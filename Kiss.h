@@ -1,7 +1,6 @@
 #ifndef KISS_H
 #define KISS_H
 
-#include "Serial_Comm.h"
 
 void kiss_indicate_reset() {
 	serial_write(FEND);

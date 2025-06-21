@@ -339,12 +339,21 @@
       #endif
 
     #elif BOARD_MODEL == BOARD_HELTEC32_V3
+      #undef HAS_DISPLAY
+      #undef HAS_BLUETOOTH 
+      #undef HAS_BLE    
+      #undef HAS_PMU
+      #undef HAS_EEPROM
+      #undef HAS_INPUT
+      #undef HAS_SLEEP
+      #undef MODEM
+      #undef HAS_TCXO
+
       #define IS_ESP32S3 true
       #define HAS_DISPLAY true
       #define HAS_BLUETOOTH false
       #define HAS_BLE true
       #define HAS_PMU true
-      
       #define HAS_EEPROM true
       #define HAS_INPUT true
       #define HAS_SLEEP true
